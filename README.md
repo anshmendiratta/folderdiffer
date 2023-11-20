@@ -5,9 +5,14 @@
 A rust cli tool to "diff" files, that is, to find files that only exist in one of two given folders, and to dump them in a third folder.
 
 # How?
-## Usage
 
 To build the binary, compile the code with `cargo r` or `cargo rust`. Then, dig into `target/debug/` and find `diff_folders` -- this is your binary file. You can then copy that file anywhere you like (like in your $PATH).
+
+## Usage
+
+To now use the script, run it using `./difF_folders` and pass in three arguments: the first two folders you wish to diff, and the third folder you wish to dump all the diff'd files into.
+
+A use case might look like `./diff_folders t1/ t2/ dump/`.
 
 # What is `ZmodTwo`?
 
