@@ -9,19 +9,22 @@ fn main() {
     // Should be three inputs: folder1, folder2, folder_to_dump_in
     // Diff folder1 and folder2 and dump all output files into folder_to_dump_in
     let folders = std::env::args().collect::<Vec<String>>().to_vec();
-    let dump_folder_path: String = format!("{}/{}/", std::env::current_dir().unwrap().display(), folders[3]);
-
-    // dbg!(&dump_folder_path[..dump_folder_path.len()-1]);
+    let dump_folder_path: String = format!("{}/{}", std::env::current_dir().unwrap().display(), folders[3]);
 
     let folder_one_files = recurse_all_files(&folders[1]);
     let folder_two_files = recurse_all_files(&folders[2]);
 
     let folder_diff: Vec<DirEntry> = diff_files(folder_one_files, folder_two_files);
-    dbg!(&folder_diff);
-    for item in folder_diff {
+    for item in &folder_diff {
         let final_file_path: String = format!("{}{}", &dump_folder_path[..dump_folder_path.len()-1], diff_folders::file_to_name(&item));
-        // dbg!(&item.path().to_str().unwrap().to_string(), &final_file_path);
-        let copy_cmd = Command::new("cp").args([item.path().to_str().unwrap().to_string(), final_file_path]).spawn().unwrap();
+        Command::new("cp").args([item.path().to_str().unwrap().to_string(), final_file_path]).spawn().unwrap();
+
+    let folder_diff_as_sentence: String = {
+        let folder_diff_string: Vec<String> = folder_diff.iter().map(|file| file.file_name().to_str().unwrap().to_string()).collect();
+        folder_diff_string.join(", ")
+    };
+
+    println!("Copied {} over to {}", folder_diff_as_sentence, dump_folder_path);
     }
 }
 
@@ -65,9 +68,7 @@ fn diff_files(catalog1: Vec<DirEntry>, catalog2: Vec<DirEntry>) -> Vec<DirEntry>
 
     let catalog_result = catalog1_zmod + catalog2_zmod;
 
-    // dbg!(&catalog_result);
     catalog_result.items
-
 }
 
 #[cfg(test)]

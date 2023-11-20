@@ -20,22 +20,20 @@ impl<DirEntry> From<Vec<DirEntry>> for ZmodTwo<DirEntry> {
 impl Add for ZmodTwo<DirEntry> {
     type Output = ZmodTwo<DirEntry>;
 
-    fn add(self, rhs: Self) -> Self::Output {
+    fn add(mut self, mut rhs: Self) -> Self::Output {
         let mut diff_files: Vec<DirEntry> = Vec::new();
 
         let self_items_namespace: &Vec<String> = &self.items.iter().map(|entry| file_to_name(entry)).collect();
         let rhs_items_namespace: &Vec<String> = &rhs.items.iter().map(|entry| file_to_name(entry)).collect();
 
-        dbg!(&self_items_namespace, &rhs_items_namespace);
+        self.items.append(&mut rhs.items);
 
-        for entry in rhs.items {
+        for entry in self.items {
             let entry_name = &entry.file_name().to_str().unwrap().to_string();
-            if self_items_namespace.contains(&entry_name) ^ rhs_items_namespace.contains(&entry_name) == true {
+            if self_items_namespace.contains(&entry_name) ^ rhs_items_namespace.contains(&entry_name) {
                 diff_files.push(entry);
             }
         }
-
-        dbg!(&diff_files);
 
         ZmodTwo {
             items: diff_files
