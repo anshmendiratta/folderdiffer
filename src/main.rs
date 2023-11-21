@@ -18,6 +18,7 @@ fn main() {
     for item in &folder_diff {
         let final_file_path: String = format!("{}{}", &dump_folder_path[..dump_folder_path.len()-1], diff_folders::file_to_name(&item));
         Command::new("cp").args([item.path().to_str().unwrap().to_string(), final_file_path]).spawn().unwrap();
+    }
 
     let folder_diff_as_sentence: String = {
         let folder_diff_string: Vec<String> = folder_diff.iter().map(|file| file.file_name().to_str().unwrap().to_string()).collect();
@@ -25,7 +26,6 @@ fn main() {
     };
 
     println!("Copied {} over to {}", folder_diff_as_sentence, dump_folder_path);
-    }
 }
 
 fn recurse_all_files(directory: &String) -> Vec<DirEntry> {
