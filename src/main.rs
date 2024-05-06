@@ -1,6 +1,7 @@
 use std::{
     fs::{self, read_dir, DirEntry, Metadata},
-    path::Path, process::Command,
+    path::Path,
+    process::Command,
 };
 
 use diff_folders::ZmodTwo;
@@ -9,23 +10,40 @@ fn main() {
     // Should be three inputs: folder1, folder2, folder_to_dump_in
     // Diff folder1 and folder2 and dump all output files into folder_to_dump_in
     let folders = std::env::args().collect::<Vec<String>>().to_vec();
-    let dump_folder_path: String = format!("{}/{}", std::env::current_dir().unwrap().display(), folders[3]);
+    let dump_folder_path: String = format!(
+        "{}/{}",
+        std::env::current_dir().unwrap().display(),
+        folders[3]
+    );
 
     let folder_one_files = recurse_all_files(&folders[1]);
     let folder_two_files = recurse_all_files(&folders[2]);
 
     let folder_diff: Vec<DirEntry> = diff_files(folder_one_files, folder_two_files);
     for item in &folder_diff {
-        let final_file_path: String = format!("{}{}", &dump_folder_path[..dump_folder_path.len()-1], diff_folders::file_to_name(&item));
-        Command::new("cp").args([item.path().to_str().unwrap().to_string(), final_file_path]).spawn().unwrap();
+        let final_file_path: String = format!(
+            "{}{}",
+            &dump_folder_path[..dump_folder_path.len() - 1],
+            diff_folders::file_to_name(item)
+        );
+        Command::new("cp")
+            .args([item.path().to_str().unwrap().to_string(), final_file_path])
+            .spawn()
+            .unwrap();
     }
 
     let folder_diff_as_sentence: String = {
-        let folder_diff_string: Vec<String> = folder_diff.iter().map(|file| file.file_name().to_str().unwrap().to_string()).collect();
+        let folder_diff_string: Vec<String> = folder_diff
+            .iter()
+            .map(|file| file.file_name().to_str().unwrap().to_string())
+            .collect();
         folder_diff_string.join(", ")
     };
 
-    println!("Copied {} over to {}", folder_diff_as_sentence, dump_folder_path);
+    println!(
+        "Copied {} over to {}",
+        folder_diff_as_sentence, dump_folder_path
+    );
 }
 
 fn recurse_all_files(directory: &String) -> Vec<DirEntry> {
@@ -69,13 +87,4 @@ fn diff_files(catalog1: Vec<DirEntry>, catalog2: Vec<DirEntry>) -> Vec<DirEntry>
     let catalog_result = catalog1_zmod + catalog2_zmod;
 
     catalog_result.items
-}
-
-#[cfg(test)]
-mod tests {
-    fn check_occurences() {
-        let check_vector = vec![1, 2, 3, 4, 2];
-        let check_number = 2;
-        assert_eq!(diff_folders::count_occurences(&check_number, check_vector), 2);
-    }
 }
