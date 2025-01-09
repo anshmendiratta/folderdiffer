@@ -1,5 +1,4 @@
 # folderdiffer
-## What?
 A rust cli tool to "diff" files, that is, to find files that only exist in one of two given folders, and to dump them in a third folder.
 
 ## How?
